@@ -41,7 +41,6 @@ namespace TicTacToeMisereUI
         private void buildBoard()
         {
             this.Text = "TicTacToeMisere";
-            this.AutoScaleMode = AutoScaleMode.None;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;

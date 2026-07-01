@@ -32,7 +32,7 @@ namespace NotTicTacToeLogic
             r_Players[1].Name = i_SecondPlayerName;
 
             r_BoardManager = new Board(r_BoardSize);
-            r_BoardManager.CellChanged += r_BoardManager_CellChanged;   // Game listens to its board
+            r_BoardManager.CellChanged += r_BoardManager_CellChanged;   
 
             foreach (Player player in r_Players)
             {
