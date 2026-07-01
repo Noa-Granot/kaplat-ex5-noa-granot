@@ -32,7 +32,7 @@ namespace NotTicTacToeLogic
             r_Players[1].Name = i_SecondPlayerName;
 
             r_BoardManager = new Board(r_BoardSize);
-            r_BoardManager.CellChanged += r_BoardManager_CellChanged;   
+            r_BoardManager.CellChanged += r_BoardManager_CellChanged;
 
             foreach (Player player in r_Players)
             {
@@ -51,7 +51,7 @@ namespace NotTicTacToeLogic
         {
             if (CellChanged != null)
             {
-                CellChanged.Invoke(this);   
+                CellChanged.Invoke(this);
             }
         }
 
@@ -78,20 +78,17 @@ namespace NotTicTacToeLogic
 
         public bool TryToPlayTurn(int i_Row, int i_Col, out bool o_CellIsOccupied)
         {
-            bool v_CellIsOccupied = true;
-            bool v_TurnIsValid = true;
-
-            bool turnIsValid = v_TurnIsValid;
-            o_CellIsOccupied = !v_CellIsOccupied;
+            bool turnIsValid = true;
+            o_CellIsOccupied = false;
 
             if (!r_BoardManager.IsCoordValid(i_Row, i_Col))
             {
-                turnIsValid = !v_TurnIsValid;
+                turnIsValid = false;
             }
             else if (!r_BoardManager.IsCellEmpty(i_Row, i_Col))
             {
-                o_CellIsOccupied = v_CellIsOccupied;
-                turnIsValid = !v_TurnIsValid;
+                o_CellIsOccupied = true;
+                turnIsValid = false;
             }
             else
             {
@@ -109,23 +106,20 @@ namespace NotTicTacToeLogic
 
         public bool IsGameOver(out bool o_BoardIsFull, out int o_WinnerId)
         {
-            bool v_GameIsOver = true;
-            bool v_BoardIsFull = true;
-
-            bool gameOver = !v_GameIsOver;
-            o_BoardIsFull = !v_BoardIsFull;
+            bool gameOver = false;
+            o_BoardIsFull = false;
             o_WinnerId = -1;
 
             if (r_BoardManager.HasWinner())
             {
-                gameOver = v_GameIsOver;
+                gameOver = true;
                 r_Players[m_CountTurns % k_NumberOfPlayers].IncrementScore();
                 o_WinnerId = r_Players[m_CountTurns % k_NumberOfPlayers].Id;
             }
             else if (r_BoardManager.IsBoardFull(m_CountTurns))
             {
-                o_BoardIsFull = v_BoardIsFull;
-                gameOver = v_GameIsOver;
+                o_BoardIsFull = true;
+                gameOver = true;
             }
 
             return gameOver;

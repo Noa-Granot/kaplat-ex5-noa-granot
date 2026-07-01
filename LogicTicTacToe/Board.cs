@@ -65,7 +65,7 @@ namespace NotTicTacToeLogic
         {
             if (CellChanged != null)
             {
-                CellChanged.Invoke(this);  
+                CellChanged.Invoke(this);
             }
         }
 
@@ -86,24 +86,16 @@ namespace NotTicTacToeLogic
 
         public bool HasWinner()
         {
-            return hasWinningRow()
-                || hasWinningColumn()
-                || isLineFull(0, 0, 1, 1)
-                || isLineFull(0, r_BoardSize - 1, 1, -1);
+            return hasWinningRow() || hasWinningColumn() || isLineFull(0, 0, 1, 1) || isLineFull(0, r_BoardSize - 1, 1, -1);
         }
 
         private bool hasWinningRow()
         {
-            bool v_WinningRowFound = true;
-            bool winningRowFound = !v_WinningRowFound;
+            bool winningRowFound = false;
 
-            for (int row = 0; row < r_BoardSize; row++)
+            for (int row = 0; row < r_BoardSize && !winningRowFound; row++)
             {
-                if (isLineFull(row, 0, 0, 1))
-                {
-                    winningRowFound = v_WinningRowFound;
-                    break;
-                }
+                winningRowFound = isLineFull(row, 0, 0, 1);
             }
 
             return winningRowFound;
@@ -111,16 +103,11 @@ namespace NotTicTacToeLogic
 
         private bool hasWinningColumn()
         {
-            bool v_WinningColumnFound = true;
-            bool winningColumnFound = !v_WinningColumnFound;
+            bool winningColumnFound = false;
 
-            for (int col = 0; col < r_BoardSize; col++)
+            for (int col = 0; col < r_BoardSize && !winningColumnFound; col++)
             {
-                if (isLineFull(0, col, 1, 0))
-                {
-                    winningColumnFound = v_WinningColumnFound;
-                    break;
-                }
+                winningColumnFound = isLineFull(0, col, 1, 0);
             }
 
             return winningColumnFound;
@@ -128,34 +115,20 @@ namespace NotTicTacToeLogic
 
         private bool isLineFull(int i_StartRow, int i_StartCol, int i_RowStep, int i_ColStep)
         {
-            bool v_IsStreak = true;
-
-            bool streak = v_IsStreak;
             eSymbols firstSign = r_BoardMatrix[i_StartRow, i_StartCol];
+            bool isStreak = firstSign != eSymbols.Empty;
 
-            if (firstSign == eSymbols.Empty)
+            int row = i_StartRow + i_RowStep;
+            int col = i_StartCol + i_ColStep;
+
+            for (int i = 1; i < r_BoardSize && isStreak; i++)
             {
-                streak = !v_IsStreak;
-            }
-            else
-            {
-                int row = i_StartRow + i_RowStep;
-                int col = i_StartCol + i_ColStep;
-
-                for (int i = 1; i < r_BoardSize; i++)
-                {
-                    if (r_BoardMatrix[row, col] != firstSign)
-                    {
-                        streak = !v_IsStreak;
-                        break;
-                    }
-
-                    row += i_RowStep;
-                    col += i_ColStep;
-                }
+                isStreak = r_BoardMatrix[row, col] == firstSign;
+                row += i_RowStep;
+                col += i_ColStep;
             }
 
-            return streak;
+            return isStreak;
         }
     }
 }
