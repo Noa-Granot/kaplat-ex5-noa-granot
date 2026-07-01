@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.Text;
 using System.Windows.Forms;
 using NotTicTacToeLogic;
 
@@ -141,21 +142,23 @@ namespace TicTacToeMisereUI
         private void handleEndOfRound(bool i_BoardIsFull, int i_WinnerId)
         {
             string title;
-            string message;
+            StringBuilder message = new StringBuilder();
 
             if (i_BoardIsFull)
             {
                 title = "A Tie!";
-                message = "Tie!\nWould you like to play another round?";
+                message.AppendLine("Tie!");
+                message.AppendLine("Would you like to play another round?");
             }
             else
             {
                 string winnerName = getPlayerNameById(i_WinnerId);
                 title = "A Win!";
-                message = string.Format("The winner is {0}!\nWould you like to play another round?", winnerName);
+                message.AppendLine($"The winner is {winnerName}!");
+                message.AppendLine("Would you like to play another round?");
             }
 
-            DialogResult answer = MessageBox.Show(message, title, MessageBoxButtons.YesNo);
+            DialogResult answer = MessageBox.Show(message.ToString(), title, MessageBoxButtons.YesNo);
 
             if (answer == DialogResult.Yes)
             {
