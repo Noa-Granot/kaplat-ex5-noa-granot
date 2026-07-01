@@ -94,13 +94,14 @@ namespace NotTicTacToeLogic
 
         private bool hasWinningRow()
         {
-            bool winningRowFound = false;
+            bool v_WinningRowFound = true;
+            bool winningRowFound = !v_WinningRowFound;
 
             for (int row = 0; row < r_BoardSize; row++)
             {
                 if (isLineFull(row, 0, 0, 1))
                 {
-                    winningRowFound = true;
+                    winningRowFound = v_WinningRowFound;
                     break;
                 }
             }
@@ -110,13 +111,14 @@ namespace NotTicTacToeLogic
 
         private bool hasWinningColumn()
         {
-            bool winningColumnFound = false;
+            bool v_WinningColumnFound = true;
+            bool winningColumnFound = !v_WinningColumnFound;
 
             for (int col = 0; col < r_BoardSize; col++)
             {
                 if (isLineFull(0, col, 1, 0))
                 {
-                    winningColumnFound = true;
+                    winningColumnFound = v_WinningColumnFound;
                     break;
                 }
             }
@@ -126,12 +128,14 @@ namespace NotTicTacToeLogic
 
         private bool isLineFull(int i_StartRow, int i_StartCol, int i_RowStep, int i_ColStep)
         {
-            bool streak = true;
+            bool v_IsStreak = true;
+
+            bool streak = v_IsStreak;
             eSymbols firstSign = r_BoardMatrix[i_StartRow, i_StartCol];
 
             if (firstSign == eSymbols.Empty)
             {
-                streak = false;
+                streak = !v_IsStreak;
             }
             else
             {
@@ -142,7 +146,7 @@ namespace NotTicTacToeLogic
                 {
                     if (r_BoardMatrix[row, col] != firstSign)
                     {
-                        streak = false;
+                        streak = !v_IsStreak;
                         break;
                     }
 
