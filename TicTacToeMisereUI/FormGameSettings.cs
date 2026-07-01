@@ -6,6 +6,7 @@ namespace TicTacToeMisereUI
 {
     public partial class FormGameSettings : Form
     {
+
         public FormGameSettings()
         {
             InitializeComponent();

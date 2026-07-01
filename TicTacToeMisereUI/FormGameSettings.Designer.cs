@@ -10,22 +10,6 @@ namespace TicTacToeMisereUI
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        protected const int k_MinBoardSize = 4;
-        protected const int k_MaxBoardSize = 10;
-        protected const int k_NumericWidth = 60;
-        protected const string k_ComputerPlaceholder = "[Computer]";
-
-        protected Label m_LabelPlayers;
-        protected Label m_LabelFirstPlayer;
-        protected TextBox m_TextBoxFirstPlayer;
-        protected CheckBox m_CheckBoxSecondPlayer;
-        protected TextBox m_TextBoxSecondPlayer;
-        protected Label m_LabelBoardSize;
-        protected Label m_LabelRows;
-        protected NumericUpDown m_NumericUpDownRows;
-        protected Label m_LabelCols;
-        protected NumericUpDown m_NumericUpDownCols;
-        protected Button m_ButtonPlay;
 
         /// <summary>
         /// Clean up any resources being used.
