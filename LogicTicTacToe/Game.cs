@@ -78,17 +78,20 @@ namespace NotTicTacToeLogic
 
         public bool TryToPlayTurn(int i_Row, int i_Col, out bool o_CellIsOccupied)
         {
-            bool turnIsValid = true;
-            o_CellIsOccupied = false;
+            bool v_CellIsOccupied = true;
+            bool v_TurnIsValid = true;
+
+            bool turnIsValid = v_TurnIsValid;
+            o_CellIsOccupied = !v_CellIsOccupied;
 
             if (!r_BoardManager.IsCoordValid(i_Row, i_Col))
             {
-                turnIsValid = false;
+                turnIsValid = !v_TurnIsValid;
             }
             else if (!r_BoardManager.IsCellEmpty(i_Row, i_Col))
             {
-                o_CellIsOccupied = true;
-                turnIsValid = false;
+                o_CellIsOccupied = v_CellIsOccupied;
+                turnIsValid = !v_TurnIsValid;
             }
             else
             {
@@ -106,20 +109,23 @@ namespace NotTicTacToeLogic
 
         public bool IsGameOver(out bool o_BoardIsFull, out int o_WinnerId)
         {
-            bool gameOver = false;
-            o_BoardIsFull = false;
+            bool v_GameIsOver = true;
+            bool v_BoardIsFull = true;
+
+            bool gameOver = !v_GameIsOver;
+            o_BoardIsFull = !v_BoardIsFull;
             o_WinnerId = -1;
 
             if (r_BoardManager.HasWinner())
             {
-                gameOver = true;
+                gameOver = v_GameIsOver;
                 r_Players[m_CountTurns % k_NumberOfPlayers].IncrementScore();
                 o_WinnerId = r_Players[m_CountTurns % k_NumberOfPlayers].Id;
             }
             else if (r_BoardManager.IsBoardFull(m_CountTurns))
             {
-                o_BoardIsFull = true;
-                gameOver = true;
+                o_BoardIsFull = v_BoardIsFull;
+                gameOver = v_GameIsOver;
             }
 
             return gameOver;
