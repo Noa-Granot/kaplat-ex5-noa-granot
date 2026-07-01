@@ -25,6 +25,17 @@ namespace TicTacToeMisereUI
             r_BoardSize = i_BoardSize;
             r_Game = new Game(i_BoardSize, i_SecondPlayerIsComputer, i_FirstPlayerName, i_SecondPlayerName);
             buildBoard();
+            r_Game.CellChanged += r_Game_CellChanged;   
+        }
+
+        private void r_Game_CellChanged(Game sender)
+        {
+            int row = sender.LastChangedRow;
+            int col = sender.LastChangedCol;
+            eSymbols symbol = sender.GetSymbolAt(row, col);
+
+            m_Buttons[row, col].Text = symbol == eSymbols.Empty ? string.Empty : ((char)symbol).ToString();
+            m_Buttons[row, col].Enabled = symbol == eSymbols.Empty;
         }
 
         private void buildBoard()
@@ -95,14 +106,8 @@ namespace TicTacToeMisereUI
 
         private void playMove(int i_Row, int i_Col)
         {
-            eSymbols symbol = r_Game.CurrentPlayerSymbol;
             bool cellIsOccupied;
-
-            if (r_Game.TryToPlayTurn(i_Row, i_Col, out cellIsOccupied))
-            {
-                m_Buttons[i_Row, i_Col].Text = ((char)symbol).ToString();
-                m_Buttons[i_Row, i_Col].Enabled = false;
-            }
+            r_Game.TryToPlayTurn(i_Row, i_Col, out cellIsOccupied);
         }
 
         private void cellButton_Click(object sender, EventArgs e)
@@ -174,16 +179,6 @@ namespace TicTacToeMisereUI
         private void startNewRound()
         {
             r_Game.StartNewRound();
-
-            for (int row = 0; row < r_BoardSize; row++)
-            {
-                for (int col = 0; col < r_BoardSize; col++)
-                {
-                    m_Buttons[row, col].Text = string.Empty;
-                    m_Buttons[row, col].Enabled = true;
-                }
-            }
-
             updateScores();
         }
     }

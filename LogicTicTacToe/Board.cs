@@ -1,9 +1,15 @@
-﻿namespace NotTicTacToeLogic
+﻿using System;
+
+namespace NotTicTacToeLogic
 {
     public class Board
     {
         private readonly eSymbols[,] r_BoardMatrix;
         private readonly int r_BoardSize;
+        private int m_LastChangedRow;
+        private int m_LastChangedCol;
+
+        public event Action<Board> CellChanged;
 
         public Board(int i_SizeOfBoard)
         {
@@ -16,6 +22,16 @@
             get { return r_BoardSize; }
         }
 
+        public int LastChangedRow
+        {
+            get { return m_LastChangedRow; }
+        }
+
+        public int LastChangedCol
+        {
+            get { return m_LastChangedCol; }
+        }
+
         public eSymbols this[int i_Row, int i_Col]
         {
             get { return r_BoardMatrix[i_Row, i_Col]; }
@@ -23,7 +39,34 @@
 
         public void MakeMove(int i_Row, int i_Col, eSymbols i_Symbol)
         {
+            setCell(i_Row, i_Col, i_Symbol);
+        }
+
+        public void Reset()
+        {
+            for (int row = 0; row < r_BoardSize; row++)
+            {
+                for (int col = 0; col < r_BoardSize; col++)
+                {
+                    setCell(row, col, eSymbols.Empty);
+                }
+            }
+        }
+
+        private void setCell(int i_Row, int i_Col, eSymbols i_Symbol)
+        {
             r_BoardMatrix[i_Row, i_Col] = i_Symbol;
+            m_LastChangedRow = i_Row;
+            m_LastChangedCol = i_Col;
+            OnCellChanged();
+        }
+
+        protected virtual void OnCellChanged()
+        {
+            if (CellChanged != null)
+            {
+                CellChanged.Invoke(this);  
+            }
         }
 
         public bool IsBoardFull(int i_CountTurnsPlayed)

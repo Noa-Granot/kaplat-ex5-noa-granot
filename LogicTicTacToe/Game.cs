@@ -1,4 +1,6 @@
-﻿namespace NotTicTacToeLogic
+﻿using System;
+
+namespace NotTicTacToeLogic
 {
     public class Game
     {
@@ -6,8 +8,10 @@
 
         private readonly Player[] r_Players;
         private readonly int r_BoardSize;
-        private Board m_BoardManager;
+        private readonly Board r_BoardManager;
         private int m_CountTurns;
+
+        public event Action<Game> CellChanged;
 
         public Game(int i_BoardSize, bool i_SecondPlayerIsComputer, string i_FirstPlayerName, string i_SecondPlayerName)
         {
@@ -26,23 +30,50 @@
 
             r_Players[0].Name = i_FirstPlayerName;
             r_Players[1].Name = i_SecondPlayerName;
+
+            r_BoardManager = new Board(r_BoardSize);
+            r_BoardManager.CellChanged += r_BoardManager_CellChanged;   // Game listens to its board
+
+            foreach (Player player in r_Players)
+            {
+                player.SetBoard(r_BoardManager);
+            }
+
             StartNewRound();
         }
 
-        public eSymbols CurrentPlayerSymbol
+        private void r_BoardManager_CellChanged(Board sender)
         {
-            get { return r_Players[m_CountTurns % k_NumberOfPlayers].Symbol; }
+            OnCellChanged();
+        }
+
+        protected virtual void OnCellChanged()
+        {
+            if (CellChanged != null)
+            {
+                CellChanged.Invoke(this);   
+            }
+        }
+
+        public int LastChangedRow
+        {
+            get { return r_BoardManager.LastChangedRow; }
+        }
+
+        public int LastChangedCol
+        {
+            get { return r_BoardManager.LastChangedCol; }
+        }
+
+        public eSymbols GetSymbolAt(int i_Row, int i_Col)
+        {
+            return r_BoardManager[i_Row, i_Col];
         }
 
         public void StartNewRound()
         {
             m_CountTurns = 0;
-            m_BoardManager = new Board(r_BoardSize);
-
-            foreach (Player player in r_Players)
-            {
-                player.SetBoard(m_BoardManager);
-            }
+            r_BoardManager.Reset();
         }
 
         public bool TryToPlayTurn(int i_Row, int i_Col, out bool o_CellIsOccupied)
@@ -50,18 +81,18 @@
             bool turnIsValid = true;
             o_CellIsOccupied = false;
 
-            if (!m_BoardManager.IsCoordValid(i_Row, i_Col))
+            if (!r_BoardManager.IsCoordValid(i_Row, i_Col))
             {
                 turnIsValid = false;
             }
-            else if (!m_BoardManager.IsCellEmpty(i_Row, i_Col))
+            else if (!r_BoardManager.IsCellEmpty(i_Row, i_Col))
             {
                 o_CellIsOccupied = true;
                 turnIsValid = false;
             }
             else
             {
-                m_BoardManager.MakeMove(i_Row, i_Col, r_Players[m_CountTurns % k_NumberOfPlayers].Symbol);
+                r_BoardManager.MakeMove(i_Row, i_Col, r_Players[m_CountTurns % k_NumberOfPlayers].Symbol);
                 m_CountTurns++;
             }
 
@@ -79,13 +110,13 @@
             o_BoardIsFull = false;
             o_WinnerId = -1;
 
-            if (m_BoardManager.HasWinner())
+            if (r_BoardManager.HasWinner())
             {
                 gameOver = true;
                 r_Players[m_CountTurns % k_NumberOfPlayers].IncrementScore();
                 o_WinnerId = r_Players[m_CountTurns % k_NumberOfPlayers].Id;
             }
-            else if (m_BoardManager.IsBoardFull(m_CountTurns))
+            else if (r_BoardManager.IsBoardFull(m_CountTurns))
             {
                 o_BoardIsFull = true;
                 gameOver = true;
