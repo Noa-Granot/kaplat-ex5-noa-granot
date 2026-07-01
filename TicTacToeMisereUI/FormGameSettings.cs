@@ -1,0 +1,187 @@
+﻿using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace TicTacToeMisereUI
+{
+    public partial class FormGameSettings : Form
+    {
+        private Label m_LabelPlayers;
+        private Label m_LabelFirstPlayer;
+        private TextBox m_TextBoxFirstPlayer;
+        private CheckBox m_CheckBoxSecondPlayer;
+        private TextBox m_TextBoxSecondPlayer;
+        private Label m_LabelBoardSize;
+        private Label m_LabelRows;
+        private NumericUpDown m_NumericUpDownRows;
+        private Label m_LabelCols;
+        private NumericUpDown m_NumericUpDownCols;
+        private Button m_ButtonPlay;
+
+        public FormGameSettings()
+        {
+            InitializeComponent();
+            buildControls();
+        }
+
+        private void buildControls()
+        {
+            this.Text = "Game Settings";
+            this.Size = new Size(300, 320);
+            this.StartPosition = FormStartPosition.CenterScreen;
+            this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+
+            m_LabelPlayers = new Label();
+            m_LabelPlayers.Text = "Players:";
+            m_LabelPlayers.AutoSize = true;
+            m_LabelPlayers.Location = new Point(20, 20);
+            this.Controls.Add(m_LabelPlayers);
+
+            m_LabelFirstPlayer = new Label();
+            m_LabelFirstPlayer.Text = "Player 1:";
+            m_LabelFirstPlayer.AutoSize = true;
+            m_LabelFirstPlayer.Location = new Point(30, 55);
+            this.Controls.Add(m_LabelFirstPlayer);
+
+            m_TextBoxFirstPlayer = new TextBox();
+            m_TextBoxFirstPlayer.Location = new Point(110, 52);
+            this.Controls.Add(m_TextBoxFirstPlayer);
+
+            m_CheckBoxSecondPlayer = new CheckBox();
+            m_CheckBoxSecondPlayer.Text = "Player 2:";
+            m_CheckBoxSecondPlayer.AutoSize = true;
+            m_CheckBoxSecondPlayer.Location = new Point(30, 90);
+            m_CheckBoxSecondPlayer.Checked = false;
+            this.Controls.Add(m_CheckBoxSecondPlayer);
+
+            m_TextBoxSecondPlayer = new TextBox();
+            m_TextBoxSecondPlayer.Text = "[Computer]";
+            m_TextBoxSecondPlayer.Location = new Point(110, 88);
+            m_TextBoxSecondPlayer.Enabled = false;
+            this.Controls.Add(m_TextBoxSecondPlayer);
+
+            m_LabelBoardSize = new Label();
+            m_LabelBoardSize.Text = "Board Size:";
+            m_LabelBoardSize.AutoSize = true;
+            m_LabelBoardSize.Location = new Point(20, 130);
+            this.Controls.Add(m_LabelBoardSize);
+
+            m_LabelRows = new Label();
+            m_LabelRows.Text = "Rows:";
+            m_LabelRows.AutoSize = true;
+            m_LabelRows.Location = new Point(30, 165);
+            this.Controls.Add(m_LabelRows);
+
+            m_NumericUpDownRows = new NumericUpDown();
+            m_NumericUpDownRows.Minimum = 4;
+            m_NumericUpDownRows.Maximum = 10;
+            m_NumericUpDownRows.Value = 4;
+            m_NumericUpDownRows.Location = new Point(80, 162);
+            m_NumericUpDownRows.Width = 60;
+            this.Controls.Add(m_NumericUpDownRows);
+
+            m_LabelCols = new Label();
+            m_LabelCols.Text = "Cols:";
+            m_LabelCols.AutoSize = true;
+            m_LabelCols.Location = new Point(150, 165);
+            this.Controls.Add(m_LabelCols);
+
+            m_NumericUpDownCols = new NumericUpDown();
+            m_NumericUpDownCols.Minimum = 4;
+            m_NumericUpDownCols.Maximum = 10;
+            m_NumericUpDownCols.Value = 4;
+            m_NumericUpDownCols.Location = new Point(200, 162);
+            m_NumericUpDownCols.Width = 60;
+            this.Controls.Add(m_NumericUpDownCols);
+
+            m_ButtonPlay = new Button();
+            m_ButtonPlay.Text = "Play!";
+            m_ButtonPlay.Location = new Point(60, 210);
+            m_ButtonPlay.Width = 150;
+            this.Controls.Add(m_ButtonPlay);
+
+            m_CheckBoxSecondPlayer.CheckedChanged += checkBoxSecondPlayer_CheckedChanged;
+            m_NumericUpDownRows.ValueChanged += numericUpDownRows_ValueChanged;
+            m_NumericUpDownCols.ValueChanged += numericUpDownCols_ValueChanged;
+            m_ButtonPlay.Click += buttonPlay_Click;
+        }
+
+        private void checkBoxSecondPlayer_CheckedChanged(object sender, EventArgs e)
+        {
+            m_TextBoxSecondPlayer.Enabled = m_CheckBoxSecondPlayer.Checked;
+            if (m_CheckBoxSecondPlayer.Checked)
+            {
+                m_TextBoxSecondPlayer.Text = "";
+            }
+            else
+            {
+                m_TextBoxSecondPlayer.Text = "[Computer]";
+            }
+        }
+
+        private void numericUpDownRows_ValueChanged(object sender, EventArgs e)
+        {
+            m_NumericUpDownCols.Value = m_NumericUpDownRows.Value;
+        }
+
+        private void numericUpDownCols_ValueChanged(object sender, EventArgs e)
+        {
+            m_NumericUpDownRows.Value = m_NumericUpDownCols.Value;
+        }
+
+        private void buttonPlay_Click(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.OK;
+        }
+
+        public int BoardSize
+        {
+            get { return (int)m_NumericUpDownRows.Value; }
+        }
+
+        public string FirstPlayerName
+        {
+            get
+            {
+                string name;
+
+                if (string.IsNullOrEmpty(m_TextBoxFirstPlayer.Text))
+                {
+                    name = "Player 1";
+                }
+                else
+                {
+                    name = m_TextBoxFirstPlayer.Text;
+                }
+
+                return name;
+            }
+        }
+
+        public bool IsSecondPlayerComputer
+        {
+            get { return !m_CheckBoxSecondPlayer.Checked; }
+        }
+
+        public string SecondPlayerName
+        {
+            get
+            {
+                string name;
+
+                if (m_CheckBoxSecondPlayer.Checked)
+                {
+                    name = m_TextBoxSecondPlayer.Text;
+                }
+                else
+                {
+                    name = "Computer";
+                }
+
+                return name;
+            }
+        }
+    }
+}
