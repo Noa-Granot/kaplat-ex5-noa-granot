@@ -9,10 +9,10 @@ namespace TicTacToeMisereUI
         public FormGameSettings()
         {
             InitializeComponent();
-            AddEvents();
+            addEvents();
         }
 
-        private void AddEvents()
+        private void addEvents()
         {
             m_CheckBoxSecondPlayer.CheckedChanged += checkBoxSecondPlayer_CheckedChanged;
             m_NumericUpDownRows.ValueChanged += numericUpDownRows_ValueChanged;
