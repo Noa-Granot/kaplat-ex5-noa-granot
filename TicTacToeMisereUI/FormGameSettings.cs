@@ -6,6 +6,11 @@ namespace TicTacToeMisereUI
 {
     public partial class FormGameSettings : Form
     {
+        private const int k_MinBoardSize = 4;
+        private const int k_MaxBoardSize = 10;
+        private const int k_NumericWidth = 60;
+        private const string k_ComputerPlaceholder = "[Computer]";
+
         private Label m_LabelPlayers;
         private Label m_LabelFirstPlayer;
         private TextBox m_TextBoxFirstPlayer;
@@ -30,6 +35,7 @@ namespace TicTacToeMisereUI
             this.Size = new Size(300, 320);
             this.StartPosition = FormStartPosition.CenterScreen;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
+            this.AutoScaleMode = AutoScaleMode.None;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
 
@@ -57,7 +63,7 @@ namespace TicTacToeMisereUI
             this.Controls.Add(m_CheckBoxSecondPlayer);
 
             m_TextBoxSecondPlayer = new TextBox();
-            m_TextBoxSecondPlayer.Text = "[Computer]";
+            m_TextBoxSecondPlayer.Text = k_ComputerPlaceholder;
             m_TextBoxSecondPlayer.Location = new Point(110, 88);
             m_TextBoxSecondPlayer.Enabled = false;
             this.Controls.Add(m_TextBoxSecondPlayer);
@@ -75,11 +81,11 @@ namespace TicTacToeMisereUI
             this.Controls.Add(m_LabelRows);
 
             m_NumericUpDownRows = new NumericUpDown();
-            m_NumericUpDownRows.Minimum = 4;
-            m_NumericUpDownRows.Maximum = 10;
-            m_NumericUpDownRows.Value = 4;
+            m_NumericUpDownRows.Minimum = k_MinBoardSize;
+            m_NumericUpDownRows.Maximum = k_MaxBoardSize;
+            m_NumericUpDownRows.Value = k_MinBoardSize;
             m_NumericUpDownRows.Location = new Point(80, 162);
-            m_NumericUpDownRows.Width = 60;
+            m_NumericUpDownRows.Width = k_NumericWidth;
             this.Controls.Add(m_NumericUpDownRows);
 
             m_LabelCols = new Label();
@@ -89,11 +95,11 @@ namespace TicTacToeMisereUI
             this.Controls.Add(m_LabelCols);
 
             m_NumericUpDownCols = new NumericUpDown();
-            m_NumericUpDownCols.Minimum = 4;
-            m_NumericUpDownCols.Maximum = 10;
-            m_NumericUpDownCols.Value = 4;
+            m_NumericUpDownCols.Minimum = k_MinBoardSize;
+            m_NumericUpDownCols.Maximum = k_MaxBoardSize;
+            m_NumericUpDownCols.Value = k_MinBoardSize;
             m_NumericUpDownCols.Location = new Point(200, 162);
-            m_NumericUpDownCols.Width = 60;
+            m_NumericUpDownCols.Width = k_NumericWidth;
             this.Controls.Add(m_NumericUpDownCols);
 
             m_ButtonPlay = new Button();
@@ -111,13 +117,14 @@ namespace TicTacToeMisereUI
         private void checkBoxSecondPlayer_CheckedChanged(object sender, EventArgs e)
         {
             m_TextBoxSecondPlayer.Enabled = m_CheckBoxSecondPlayer.Checked;
+
             if (m_CheckBoxSecondPlayer.Checked)
             {
-                m_TextBoxSecondPlayer.Text = "";
+                m_TextBoxSecondPlayer.Text = string.Empty;
             }
             else
             {
-                m_TextBoxSecondPlayer.Text = "[Computer]";
+                m_TextBoxSecondPlayer.Text = k_ComputerPlaceholder;
             }
         }
 
@@ -141,6 +148,11 @@ namespace TicTacToeMisereUI
             get { return (int)m_NumericUpDownRows.Value; }
         }
 
+        public bool IsSecondPlayerComputer
+        {
+            get { return !m_CheckBoxSecondPlayer.Checked; }
+        }
+
         public string FirstPlayerName
         {
             get
@@ -160,24 +172,23 @@ namespace TicTacToeMisereUI
             }
         }
 
-        public bool IsSecondPlayerComputer
-        {
-            get { return !m_CheckBoxSecondPlayer.Checked; }
-        }
-
         public string SecondPlayerName
         {
             get
             {
                 string name;
 
-                if (m_CheckBoxSecondPlayer.Checked)
+                if (!m_CheckBoxSecondPlayer.Checked)
                 {
-                    name = m_TextBoxSecondPlayer.Text;
+                    name = "Computer";
+                }
+                else if (string.IsNullOrEmpty(m_TextBoxSecondPlayer.Text))
+                {
+                    name = "Player 2";
                 }
                 else
                 {
-                    name = "Computer";
+                    name = m_TextBoxSecondPlayer.Text;
                 }
 
                 return name;

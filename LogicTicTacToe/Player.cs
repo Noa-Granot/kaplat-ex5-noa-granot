@@ -2,52 +2,52 @@
 {
     public abstract class Player
     {
-        private int m_Id;
+        private static int s_IdGenerator;
+
+        private readonly int r_Id;
+        private readonly eSymbols r_Symbol;
         private string m_Name;
-        private int m_Score = 0;
-        protected Board m_Board = null;
-        private eSymbols m_Symbol;
-        private static int s_IdGenerator = 0;
+        private int m_Score;
+        protected Board m_Board;
+
         public Player()
         {
-            m_Id = s_IdGenerator;
-            m_Symbol = (eSymbols)(s_IdGenerator % 2 == 0 ? eSymbols.X : eSymbols.O);
+            r_Id = s_IdGenerator;
+            r_Symbol = r_Id % 2 == 0 ? eSymbols.X : eSymbols.O;
             s_IdGenerator++;
         }
+
         public string Name
         {
             get { return m_Name; }
             set { m_Name = value; }
         }
-        public void ResetScore()
+
+        public int Id
         {
-            m_Score = 0;
+            get { return r_Id; }
         }
-        public int GetId()
+
+        public eSymbols Symbol
         {
-            return m_Id;
+            get { return r_Symbol; }
         }
-        public eSymbols GetSymbol()
+
+        public int Score
         {
-            return m_Symbol;
+            get { return m_Score; }
         }
-        public int GetScore()
-        {
-            return m_Score;
-        }
+
         public void IncrementScore()
         {
             m_Score++;
         }
+
         public void SetBoard(Board i_Board)
         {
             m_Board = i_Board;
         }
-        public virtual bool HasCoordinates(out int o_Row, out int o_Col)
-        {
-            o_Row = -1;
-            o_Col = -1;
-            return false;
-        }
+
+        public abstract bool TryGetMove(out int o_Row, out int o_Col);
     }
 }

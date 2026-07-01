@@ -8,8 +8,13 @@ namespace TicTacToeMisereUI
 {
     public partial class FormGame : Form
     {
-        private Game m_Game;
-        private int m_BoardSize;
+        private const int k_CellSize = 60;
+        private const int k_Margin = 10;
+        private const int k_ScoreAreaHeight = 30;
+        private const int k_ScoreLabelTopSpacing = 5;
+
+        private readonly Game r_Game;
+        private readonly int r_BoardSize;
         private Button[,] m_Buttons;
         private Label m_LabelFirstPlayerScore;
         private Label m_LabelSecondPlayerScore;
@@ -17,60 +22,56 @@ namespace TicTacToeMisereUI
         public FormGame(int i_BoardSize, string i_FirstPlayerName, string i_SecondPlayerName, bool i_SecondPlayerIsComputer)
         {
             InitializeComponent();
-            m_BoardSize = i_BoardSize;
-            m_Game = new Game();
-            m_Game.InitializeGame(i_BoardSize, i_SecondPlayerIsComputer);
-            m_Game.GetPlayers()[0].Name = i_FirstPlayerName;
-            m_Game.GetPlayers()[1].Name = i_SecondPlayerName;
+            r_BoardSize = i_BoardSize;
+            r_Game = new Game(i_BoardSize, i_SecondPlayerIsComputer, i_FirstPlayerName, i_SecondPlayerName);
             buildBoard();
         }
 
         private void buildBoard()
         {
             this.Text = "TicTacToeMisere";
+            this.AutoScaleMode = AutoScaleMode.None;
             this.FormBorderStyle = FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.StartPosition = FormStartPosition.CenterScreen;
+            m_Buttons = new Button[r_BoardSize, r_BoardSize];
 
-            int cellSize = 60;
-            int margin = 10;
-            m_Buttons = new Button[m_BoardSize, m_BoardSize];
-
-            for (int row = 0; row < m_BoardSize; row++)
+            for (int row = 0; row < r_BoardSize; row++)
             {
-                for (int col = 0; col < m_BoardSize; col++)
+                for (int col = 0; col < r_BoardSize; col++)
                 {
                     Button button = new Button();
-                    button.Size = new Size(cellSize, cellSize);
-                    button.Location = new Point(margin + col * cellSize, margin + row * cellSize);
+                    button.Size = new Size(k_CellSize, k_CellSize);
+                    button.Location = new Point(k_Margin + col * k_CellSize, k_Margin + row * k_CellSize);
                     button.Click += cellButton_Click;
                     this.Controls.Add(button);
                     m_Buttons[row, col] = button;
                 }
             }
 
-            int labelsY = margin + m_BoardSize * cellSize + 5;
+            int labelsY = k_Margin + r_BoardSize * k_CellSize + k_ScoreLabelTopSpacing;
 
             m_LabelFirstPlayerScore = new Label();
             m_LabelFirstPlayerScore.AutoSize = true;
-            m_LabelFirstPlayerScore.Location = new Point(margin, labelsY);
+            m_LabelFirstPlayerScore.Location = new Point(k_Margin, labelsY);
             this.Controls.Add(m_LabelFirstPlayerScore);
 
             m_LabelSecondPlayerScore = new Label();
             m_LabelSecondPlayerScore.AutoSize = true;
-            m_LabelSecondPlayerScore.Location = new Point(margin + (m_BoardSize * cellSize) / 2, labelsY);
+            m_LabelSecondPlayerScore.Location = new Point(k_Margin + (r_BoardSize * k_CellSize) / 2, labelsY);
             this.Controls.Add(m_LabelSecondPlayerScore);
 
             updateScores();
 
-            this.ClientSize = new Size(margin * 2 + m_BoardSize * cellSize, margin * 2 + m_BoardSize * cellSize + 30);
+            this.ClientSize = new Size(
+                k_Margin * 2 + r_BoardSize * k_CellSize,
+                k_Margin * 2 + r_BoardSize * k_CellSize + k_ScoreAreaHeight);
         }
 
         private void updateScores()
         {
-            Player[] players = m_Game.GetPlayers();
-            m_LabelFirstPlayerScore.Text = string.Format("{0}: {1}", players[0].Name, players[0].GetScore());
-            m_LabelSecondPlayerScore.Text = string.Format("{0}: {1}", players[1].Name, players[1].GetScore());
+            m_LabelFirstPlayerScore.Text = string.Format("{0}: {1}", r_Game.GetPlayerName(0), r_Game.GetPlayerScore(0));
+            m_LabelSecondPlayerScore.Text = string.Format("{0}: {1}", r_Game.GetPlayerName(1), r_Game.GetPlayerScore(1));
         }
 
         private void getButtonPosition(Button i_Button, out int o_Row, out int o_Col)
@@ -78,9 +79,9 @@ namespace TicTacToeMisereUI
             o_Row = -1;
             o_Col = -1;
 
-            for (int row = 0; row < m_BoardSize; row++)
+            for (int row = 0; row < r_BoardSize; row++)
             {
-                for (int col = 0; col < m_BoardSize; col++)
+                for (int col = 0; col < r_BoardSize; col++)
                 {
                     if (m_Buttons[row, col] == i_Button)
                     {
@@ -94,10 +95,10 @@ namespace TicTacToeMisereUI
 
         private void playMove(int i_Row, int i_Col)
         {
-            eSymbols symbol = m_Game.GetCurrentPlayer().GetSymbol();
+            eSymbols symbol = r_Game.CurrentPlayerSymbol;
             bool cellIsOccupied;
 
-            if (m_Game.TryToPlayTurn(i_Row, i_Col, out cellIsOccupied))
+            if (r_Game.TryToPlayTurn(i_Row, i_Col, out cellIsOccupied))
             {
                 m_Buttons[i_Row, i_Col].Text = ((char)symbol).ToString();
                 m_Buttons[i_Row, i_Col].Enabled = false;
@@ -106,7 +107,7 @@ namespace TicTacToeMisereUI
 
         private void cellButton_Click(object sender, EventArgs e)
         {
-            Button clickedButton = sender as Button;
+            Button clickedButton = (Button)sender;
             int row, col;
 
             getButtonPosition(clickedButton, out row, out col);
@@ -116,7 +117,7 @@ namespace TicTacToeMisereUI
             {
                 int computerRow, computerCol;
 
-                if (m_Game.GetCurrentPlayer().HasCoordinates(out computerRow, out computerCol))
+                if (r_Game.TryGetComputerMove(out computerRow, out computerCol))
                 {
                     playMove(computerRow, computerCol);
                     checkGameOver();
@@ -128,7 +129,7 @@ namespace TicTacToeMisereUI
         {
             bool boardIsFull;
             int winnerId;
-            bool gameOver = m_Game.IsGameOver(out boardIsFull, out winnerId);
+            bool gameOver = r_Game.IsGameOver(out boardIsFull, out winnerId);
 
             if (gameOver)
             {
@@ -152,9 +153,9 @@ namespace TicTacToeMisereUI
             }
             else
             {
-                string winnerName = getPlayerNameById(i_WinnerId);
+                string winnerName = r_Game.GetPlayerNameById(i_WinnerId);
                 title = "A Win!";
-                message.AppendLine($"The winner is {winnerName}!");
+                message.AppendLine(string.Format("The winner is {0}!", winnerName));
                 message.AppendLine("Would you like to play another round?");
             }
 
@@ -170,32 +171,15 @@ namespace TicTacToeMisereUI
             }
         }
 
-        private string getPlayerNameById(int i_Id)
-        {
-            Player[] players = m_Game.GetPlayers();
-            string name;
-
-            if (players[0].GetId() == i_Id)
-            {
-                name = players[0].Name;
-            }
-            else
-            {
-                name = players[1].Name;
-            }
-
-            return name;
-        }
-
         private void startNewRound()
         {
-            m_Game.ResetGame();
+            r_Game.StartNewRound();
 
-            for (int row = 0; row < m_BoardSize; row++)
+            for (int row = 0; row < r_BoardSize; row++)
             {
-                for (int col = 0; col < m_BoardSize; col++)
+                for (int col = 0; col < r_BoardSize; col++)
                 {
-                    m_Buttons[row, col].Text = "";
+                    m_Buttons[row, col].Text = string.Empty;
                     m_Buttons[row, col].Enabled = true;
                 }
             }

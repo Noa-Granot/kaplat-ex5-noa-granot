@@ -5,13 +5,13 @@ namespace NotTicTacToeLogic
 {
     public class AutoPlayer : Player
     {
-        private static readonly Random s_Random = new Random();
+        private static readonly Random sr_Random = new Random();
 
-        public override bool HasCoordinates(out int o_Row, out int o_Col)
+        public override bool TryGetMove(out int o_Row, out int o_Col)
         {
             List<int> freeRows = new List<int>();
             List<int> freeCols = new List<int>();
-            int boardSize = m_Board.GetBoardSize();
+            int boardSize = m_Board.Size;
             bool hasFreeCell;
 
             for (int row = 0; row < boardSize; row++)
@@ -32,7 +32,7 @@ namespace NotTicTacToeLogic
 
             if (hasFreeCell)
             {
-                int index = s_Random.Next(0, freeRows.Count);
+                int index = sr_Random.Next(0, freeRows.Count);
                 o_Row = freeRows[index];
                 o_Col = freeCols[index];
             }
